@@ -2,8 +2,13 @@
   "name": "dotfiles",
   "displayName": "dotfiles",
   "publisher": "grg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grgar/vscode-dotfiles"
+  },
   "description": "Apply dotfiles from settings",
   "version": "0.1.0",
+  "license": "MIT",
   "preview": true,
   "engines": {
     "vscode": "^1.74.0"
