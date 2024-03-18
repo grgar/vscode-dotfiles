@@ -3,7 +3,8 @@
   "displayName": "dotfiles",
   "publisher": "grg",
   "description": "Apply dotfiles from settings",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "preview": true,
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -29,17 +30,10 @@
           "markdownDescription": "Path to config directory. If unset, uses `$XDG_CONFIG_DIR` with fallback to `$HOME/.config`.",
           "order": 1
         },
-        "dotfiles.file": {
-          "type": "string",
-          "default": "fish/conf.d/vscode.fish",
-          "markdownDescription": "Path to config file relative to `#dotfiles.directory#` directory.",
+        "dotfiles.files": {
+          "type": "object",
+          "markdownDescription": "Files to apply where key is file path relative to `#dotfiles.directory#` and value is file content.",
           "order": 2
-        },
-        "dotfiles.content": {
-          "type": "string",
-          "description": "Content of config file.",
-          "editPresentation": "multilineText",
-          "order": 3
         }
       }
     }
@@ -53,7 +47,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.87.0",
+    "@types/vscode": "^1.74.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
