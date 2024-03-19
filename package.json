@@ -7,7 +7,7 @@
     "url": "https://github.com/grgar/vscode-dotfiles"
   },
   "description": "Apply dotfiles from settings",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "preview": true,
   "engines": {
@@ -23,8 +23,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "config-setup.apply",
-        "title": "Apply Config from Config Setup"
+        "command": "dotfiles.apply",
+        "title": "dotfiles: Apply Config"
       }
     ],
     "configuration": {
