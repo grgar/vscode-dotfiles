@@ -21,6 +21,6 @@ version: CHANGELOG.md
 ${file}: version
 	npx vsce package
 
-publish: ${package} CHANGELOG.md
-	npx vsce publish ${tag} -i ${package}
-	git log $(git describe --tags --abbrev=0 @^).. | gh release create ${tag} --notes-file - ${package}
+publish: ${file} CHANGELOG.md
+	npx vsce publish -i ${file}
+	git log --oneline --decorate-refs='tags/*' --format="- %w(0,0,2)%B" (git describe --tags --abbrev=0 @^)... | gh release create ${tag} --notes-file - ${file}
