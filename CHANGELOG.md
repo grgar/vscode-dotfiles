@@ -1,4 +1,14 @@
 # Changelog
+### v0.1.2
+
+- Add icon
+
+
+- Link to GitHub for Q&A
+
+
+- Add Makefile
+
 ### v0.1.1
 
 - Fix command identifier

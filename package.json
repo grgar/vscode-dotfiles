@@ -7,7 +7,8 @@
     "url": "https://github.com/grgar/vscode-dotfiles"
   },
   "description": "Apply dotfiles from settings",
-  "version": "0.1.1",
+  "icon": "images/icon-small.png",
+  "version": "0.1.2",
   "license": "MIT",
   "preview": true,
   "engines": {
