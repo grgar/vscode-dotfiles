@@ -16,6 +16,7 @@
   "categories": [
     "Other"
   ],
+  "qna": "https://github.com/grgar/vscode-dotfiles/discussions",
   "activationEvents": [
     "onStartupFinished"
   ],
