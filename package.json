@@ -50,6 +50,11 @@
           "type": "object",
           "markdownDescription": "Files to apply where key is file path relative to `#dotfiles.directory#` and value is file content.",
           "order": 2
+        },
+        "dotfiles.autoUpdate": {
+          "type": "boolean",
+          "markdownDescription": "Automatically update settings configuration when saving a file in the editor that matches a file whose path is a key of `#dotfiles.files#`.",
+          "order": 3
         }
       }
     }
