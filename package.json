@@ -17,7 +17,16 @@
   "categories": [
     "Other"
   ],
+  "homepage": "https://github.com/grgar/vscode-dotfiles",
   "qna": "https://github.com/grgar/vscode-dotfiles/discussions",
+  "bugs": {
+    "email": "vscode@grg.app",
+    "url": "https://github.com/grgar/vscode-dotfiles/issues"
+  },
+  "galleryBanner": {
+    "theme": "light",
+    "color": "#f6f8fa"
+  },
   "activationEvents": [
     "onStartupFinished"
   ],
