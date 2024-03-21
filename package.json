@@ -8,7 +8,7 @@
   },
   "description": "Apply dotfiles from settings",
   "icon": "images/icon-small.png",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "license": "MIT",
   "preview": true,
   "engines": {

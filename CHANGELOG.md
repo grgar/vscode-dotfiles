@@ -1,4 +1,27 @@
 # Changelog
+### v1.0.0
+
+- Add example to readme
+
+
+- Fix XDG_CONFIG_HOME env var
+
+
+- Optionally automatically update dotfiles to and from settings
+  
+  Add a new config option to automatically apply files from settings, and to apply changes to the files back to settings.
+
+
+- Log files written to output channel
+
+
+- Add more links to marketplace listing
+  
+  Also use light background for gallery banner
+
+
+- Fix Makefile publish target
+
 ### v0.1.2
 
 - Add icon
