@@ -6,7 +6,7 @@ const configNamespace = "dotfiles";
 const outputChannel = vscode.window.createOutputChannel(configNamespace);
 
 function getDirectoryPath() {
-	let directory = vscode.workspace.getConfiguration(configNamespace).get<string>("directory") || process.env["XDG_CONFIG_DIR"] || path.join(process.env["HOME"]!, ".config");
+	let directory = vscode.workspace.getConfiguration(configNamespace).get<string>("directory") || process.env["XDG_CONFIG_HOME"] || path.join(process.env["HOME"]!, ".config");
 	if (directory.endsWith("/")) {
 		return directory.slice(directory.length - 1);
 	}
