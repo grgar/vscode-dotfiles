@@ -1,38 +1,15 @@
 import * as fs from "fs/promises";
 import path from 'path';
 import * as vscode from 'vscode';
+import Configuration from "./Configuration";
 
-const configNamespace = "dotfiles";
+export const configNamespace = "dotfiles";
 const outputChannel = vscode.window.createOutputChannel(configNamespace);
 
-function getDirectoryPath() {
-	let directory = vscode.workspace.getConfiguration(configNamespace).get<string>("directory") || process.env["XDG_CONFIG_HOME"] || path.join(process.env["HOME"]!, ".config");
-	if (directory.endsWith("/")) {
-		return directory.slice(directory.length - 1);
-	}
-	return directory;
-}
-
-function getFiles() {
-	return vscode.workspace.getConfiguration(configNamespace).get<{ [key: string]: string; }>("files", {});
-}
-
-async function setFiles(files: { [key: string]: string; }) {
-	try {
-		await vscode.workspace.getConfiguration(configNamespace).update("files", files, vscode.ConfigurationTarget.Global);
-	} catch (err) {
-		outputChannel.appendLine(`${new Date().toLocaleString()}: failed to update files: ${err}`);
-		vscode.window.showErrorMessage("Unable to update dotfiles.files: " + err);
-	}
-}
-
-function shouldAutoUpdate() {
-	return vscode.workspace.getConfiguration(configNamespace).get<boolean>("autoUpdate", false);
-}
-
 async function apply() {
-	const directory = getDirectoryPath();
-	for (const [file, content] of Object.entries(getFiles())) {
+	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
+	const directory = configuration.getDirectoryPath();
+	for (const [file, content] of Object.entries(configuration.getFiles())) {
 		const filePath = path.join(directory, file);
 		try {
 			await fs.stat(filePath);
@@ -45,24 +22,25 @@ async function apply() {
 }
 
 function didSave(doc: vscode.TextDocument) {
-	if (!shouldAutoUpdate()) {
+	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
+	if (!configuration.shouldAutoUpdate()) {
 		return;
 	}
 	if (doc.uri.scheme !== "file") {
 		return;
 	}
-	const directory = getDirectoryPath();
+	const directory = configuration.getDirectoryPath();
 	if (!doc.uri.path.startsWith(directory + "/")) {
 		return;
 	}
-	const files = getFiles();
+	const files = configuration.getFiles();
 	const relativePath = doc.uri.path.slice(directory.length + 1);
 	if (!files[relativePath]) {
 		outputChannel.appendLine(`${new Date().toLocaleString()}: file ${relativePath} in ${directory} not found in settings`);
 		return;
 	}
 	files[relativePath] = doc.getText();
-	setFiles(files);
+	configuration.setFiles(files);
 	outputChannel.appendLine(`${new Date().toLocaleString()}: updated ${relativePath}`);
 }
 
@@ -71,7 +49,8 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("dotfiles.apply", apply),
 		vscode.workspace.onDidSaveTextDocument(didSave)
 	);
-	if (shouldAutoUpdate()) {
+	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
+	if (configuration.shouldAutoUpdate()) {
 		apply();
 	}
 }

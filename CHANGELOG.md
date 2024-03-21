@@ -1,4 +1,8 @@
 # Changelog
+### v1.0.1
+
+- Refactor Configuration to a separate class
+
 ### v1.0.0
 
 - Add example to readme

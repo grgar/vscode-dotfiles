@@ -1,10 +1,10 @@
 {
 	"files.exclude": {
 		"out": false,
-		".vscode-test": true,
 	},
 	"search.exclude": {
-		"out": true
+		"out": true,
+		".vscode-test": true,
 	},
 	"typescript.tsc.autoDetect": "off",
 	"git.branchProtection": [ ]
