@@ -1,8 +1,9 @@
-import * as fs from 'fs';
+import * as fs from "fs/promises";
 import path from 'path';
 import * as vscode from 'vscode';
 
 const configNamespace = "dotfiles";
+const outputChannel = vscode.window.createOutputChannel(configNamespace);
 
 async function apply() {
 	const config = vscode.workspace.getConfiguration(configNamespace);
@@ -10,16 +11,13 @@ async function apply() {
 	const files = Object.entries(config.get<object>("files", {}));
 	for (const [file, content] of files) {
 		const filePath = path.join(directory, file);
-		fs.stat(filePath, (err, _) => {
-			if (err) {
-				vscode.window.showWarningMessage(`${filePath} does not exist`);
-				return;
-			}
-			if (!content) {
-				return;
-			}
-			fs.writeFile(filePath, content, { encoding: "utf-8", mode: "w" }, () => { });
-		});
+		try {
+			await fs.stat(filePath);
+			await fs.writeFile(filePath, content);
+			outputChannel.appendLine(`${new Date().toLocaleString()}: wrote ${filePath}`);
+		} catch (err) {
+			vscode.window.showWarningMessage(`${filePath} was not written: ${err}`);
+		}
 	}
 }
 
