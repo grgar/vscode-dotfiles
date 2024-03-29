@@ -17,7 +17,7 @@ export class SettingsLensProvider implements vscode.CodeLensProvider {
 				new vscode.CodeLens(
 					range,
 					{
-						title: "open file",
+						title: "$(go-to-file) open file",
 						command: "vscode.open",
 						arguments: [path.join(this.basePath, name)],
 					},

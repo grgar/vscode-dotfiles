@@ -39,7 +39,8 @@
     "commands": [
       {
         "command": "dotfiles.apply",
-        "title": "dotfiles: Apply Config"
+        "title": "dotfiles: Apply Config",
+        "icon": "$(file-symlink-file)"
       }
     ],
     "configuration": {
