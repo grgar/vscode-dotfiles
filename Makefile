@@ -1,5 +1,5 @@
 .SUFFIXES:
-version = $(shell git describe | tr "-" "." | awk -F. -vOFS=. '{if (NF>3) {NF=3; $NF++;} print}' | cut -c 2-)
+version = $(shell git describe | tr "-" "." | awk -F. -vOFS=. '{if (NF>3) {NF=3; $$NF++;} print}' | cut -c 2-)
 file = dotfiles-${version}.vsix
 vsce-flags =
 
@@ -19,4 +19,4 @@ CHANGELOG.md: .git/refs/heads/main
 ${file}: CHANGELOG.md .git/refs/tags/v${version}
 	npx vsce package ${vsce-flags} ${version}
 	npx vsce publish -i ${file} ${vsce-flags}
-	git log --oneline --decorate-refs='tags/*' --format="- %w(0,0,2)%B" (git describe --tags --abbrev=0 @^)... | gh release create v${version} --notes-file - ${file}
+	git log --oneline --decorate-refs='tags/*' --format="- %w(0,0,2)%B" $(shell git describe --tags --abbrev=0 @^)... | gh release create v${version} --notes-file - ${file}
