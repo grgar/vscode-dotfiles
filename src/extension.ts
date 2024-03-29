@@ -1,9 +1,9 @@
 import * as fs from "fs/promises";
 import path from 'path';
 import * as vscode from 'vscode';
-import Configuration from "./Configuration";
+import Configuration, { namespace as configNamespace, Section } from "./Configuration";
+import { SettingsLensProvider } from "./SettingsLensProvider";
 
-export const configNamespace = "dotfiles";
 const outputChannel = vscode.window.createOutputChannel(configNamespace);
 
 async function apply() {
@@ -45,11 +45,18 @@ function didSave(doc: vscode.TextDocument) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dotfiles.apply", apply),
-		vscode.workspace.onDidSaveTextDocument(didSave)
+		vscode.workspace.onDidSaveTextDocument(didSave),
+		vscode.languages.registerCodeLensProvider(
+			{
+				language: 'jsonc',
+				pattern: '**/settings.json',
+			},
+			new SettingsLensProvider(`${configNamespace}.${Section.files}`, configuration.getDirectoryPath()),
+		)
 	);
-	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
 	if (configuration.shouldAutoUpdate()) {
 		apply();
 	}

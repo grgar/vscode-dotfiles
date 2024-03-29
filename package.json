@@ -8,15 +8,19 @@
   },
   "description": "Apply dotfiles from settings",
   "icon": "images/icon-small.png",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "license": "MIT",
-  "preview": true,
   "engines": {
     "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
   ],
+  "author": {
+    "name": "grg",
+    "url": "https://grg.app",
+    "email": "vscode@grg.app"
+  },
   "homepage": "https://github.com/grgar/vscode-dotfiles",
   "qna": "https://github.com/grgar/vscode-dotfiles/discussions",
   "bugs": {
@@ -68,14 +72,15 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
     "@vscode/test-cli": "^0.0.6",
-    "@vscode/test-electron": "^2.3.9"
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "jsonc-parser": "^3.2.1",
+    "typescript": "^5.3.3"
   }
 }

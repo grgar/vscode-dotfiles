@@ -1,4 +1,13 @@
 # Changelog
+### v1.1.0
+
+- Add code lens for editing files from settings
+  
+  Add ability to open editor for file added to `dotfiles.files` settings using a code lens, to make it faster to update the files in settings.json. Changes made in the editor automatically update the file's content in settings.json if `dotfiles.autoUpdate` is enabled.
+
+
+- Simplify Makefile
+
 ### v1.0.1
 
 - Refactor Configuration to a separate class
@@ -58,4 +67,3 @@
 
 
 - Initial commit
-
