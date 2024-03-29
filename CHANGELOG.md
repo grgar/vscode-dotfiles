@@ -1,4 +1,11 @@
 # Changelog
+### v1.1.1
+
+- Fix missing jsonc-parser dependency
+
+
+- Fix Makefile shell syntax
+
 ### v1.1.0
 
 - Add code lens for editing files from settings
@@ -67,3 +74,4 @@
 
 
 - Initial commit
+
