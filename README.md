@@ -14,7 +14,7 @@ If `dotfiles.autoUpdate` is enabled, automatically apply config from settings to
 }
 ```
 
-writes file `$XDG_CONFIG_HOME/path/to/file.txt` with the content of the key.
+writes file `$XDG_CONFIG_HOME/path/to/file.txt` with the content of the key. File paths are always POSIX.
 
 A code lens is added to keys in settings.json under `dotfiles.files` to open the file in an editor. Saving the file in the editor will apply changes back to settings.json if `dotfiles.autoUpdate` is enabled.
 

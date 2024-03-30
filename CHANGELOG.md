@@ -1,4 +1,13 @@
 # Changelog
+### v1.1.2
+
+- Always use posix-specific pathing
+  
+  https://nodejs.org/dist/latest-v10.x/docs/api/path.html#path_windows_vs_posix
+
+
+- Add Codicons
+
 ### v1.1.1
 
 - Fix missing jsonc-parser dependency

@@ -1,5 +1,5 @@
 import { JSONVisitor, visit } from "jsonc-parser";
-import path from "path";
+import { posix as path } from "path";
 import * as vscode from "vscode";
 
 export class SettingsLensProvider implements vscode.CodeLensProvider {
