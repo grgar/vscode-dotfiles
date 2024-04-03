@@ -1,4 +1,10 @@
 # Changelog
+### v1.1.3
+
+- Add create option if file does not exist
+  
+  If the file doesn't exist, a warning is displayed. Add a create button to create the file on the warning and proceed.
+
 ### v1.1.2
 
 - Always use posix-specific pathing

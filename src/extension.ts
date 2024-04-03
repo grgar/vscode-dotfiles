@@ -13,6 +13,15 @@ async function apply() {
 		const filePath = path.join(directory, file);
 		try {
 			await fs.stat(filePath);
+		} catch (err) {
+			switch (await vscode.window.showWarningMessage(`${filePath} does not exist: ${err}`, "Create")) {
+				case "Create":
+					break;
+				default:
+					continue;
+			}
+		}
+		try {
 			await fs.writeFile(filePath, content);
 			outputChannel.appendLine(`${new Date().toLocaleString()}: wrote ${filePath}`);
 		} catch (err) {
