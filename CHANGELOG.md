@@ -1,4 +1,8 @@
 # Changelog
+### v1.1.4
+
+- Show editor for files in settings UI
+
 ### v1.1.3
 
 - Add create option if file does not exist
