@@ -1,4 +1,8 @@
 # Changelog
+### v1.1.5
+
+- Use category for command
+
 ### v1.1.4
 
 - Show editor for files in settings UI
