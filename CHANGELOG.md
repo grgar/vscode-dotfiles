@@ -1,5 +1,14 @@
 # Changelog
-### v1.1.6
+### v1.1.7
+
+- Release dependabot updates
+
+
+- Bump braces in the npm_and_yarn group across 1 directory
+
+
+- Bump the npm_and_yarn group across 1 directory with 2 updates
+
 ### v1.1.6
 
 - Fix icon colour for dark mode
@@ -102,4 +111,3 @@
 
 
 - Initial commit
-
