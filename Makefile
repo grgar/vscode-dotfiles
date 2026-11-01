@@ -1,22 +1,26 @@
+# @grgar's VS Code extension makefile (https://github.com/grgar/vscode-template)
+
 .SUFFIXES:
-version = $(shell git describe | tr "-" "." | awk -F. -vOFS=. '{if (NF>3) {NF=3; $$NF++;} print}' | cut -c 2-)
-file = dotfiles-${version}.vsix
+version = $(shell (git describe 2>/dev/null || echo v0.0.0.0) | tr "-" "." | awk -F. -vOFS=. '{if (NF>3) $$3++; print $$1,$$2,$$3}' | cut -c 2-)
+name = $(shell node -p "require('./package.json').name")
 vsce-flags =
+suffix =
 
-all: ${file}
+.PHONY: install package release
 
-CHANGELOG.md: .git/refs/heads/main
-	echo "# Changelog\n### v${version}" >$@
-	git log --oneline --decorate-refs='tags/*' --format="%(decorate:prefix=### ,suffix=%n,tag=)%n- %w(0,0,2)%B" >>$@
+install: ${name}-${version}-dev.vsix
+	code --install-extension ${name}-${version}-dev.vsix
 
-.git/refs/tags/v${version}: CHANGELOG.md
-	npm version ${version} --no-git-tag-version
-	git add package.json package-lock.json CHANGELOG.md
-	git commit --amend --no-edit
-	git tag -afsm "" v${version}
-	git push origin main v${version}
+.INTERMEDIATE: ${name}-${version}-dev.vsix
+${name}-${version}-dev.vsix:
+	npx vsce package ${vsce-flags} ${version}-dev --no-git-tag-version --no-update-package-json
 
-${file}: CHANGELOG.md .git/refs/tags/v${version}
-	npx vsce package ${vsce-flags} ${version}
-	npx vsce publish -i ${file} ${vsce-flags}
-	git log --oneline --decorate-refs='tags/*' --format="- %w(0,0,2)%B" $(shell git describe --tags --abbrev=0 @^)... | gh release create v${version} --notes-file - ${file}
+package:
+	npx vsce package ${vsce-flags} ${version}${suffix} --no-git-tag-version --no-update-package-json
+
+# Tags the current commit and pushes the tag; the Release workflow
+# (.github/workflows/release.yml) takes over from the tag push. package.json's
+# version is not updated: the release is packaged with the version from the tag.
+release:
+	git tag -a v${version} -m v${version}
+	git push origin v${version}

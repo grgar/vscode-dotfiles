@@ -1,7 +1,10 @@
+.github/**
 .vscode/**
 .vscode-test/**
+.vscode-test.mjs
 src/**
 .gitignore
+Makefile
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
