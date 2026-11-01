@@ -27,3 +27,19 @@ A code lens is added to keys in settings.json under `dotfiles.files` to open the
 |`dotfiles.directory`|Base directory path for all config files to be written.|`""`, meaning `$XDG_CONFIG_HOME` or `$HOME/.config` if unset.|
 |`dotfiles.files`|Files to be written to the configured directory, where key is the relative path to the file and value is the content of the file.|`{}`|
 |`dotfiles.autoUpdate`|Whether to automatically apply changes to files on workbench open, and persist changes back into settings from the editor.|`false`|
+
+## Releasing
+
+Releases run entirely in GitHub Actions ([release.yml](.github/workflows/release.yml)), triggered by pushing a `v*` tag. Either:
+
+- run `make release` locally, which computes the next version from `git describe`, tags the current commit, and pushes the tag, or
+- run the **Release** workflow from the Actions tab, which does the same remotely on the branch you run it from (an unsigned tag by the github-actions bot).
+
+The workflow tests, packages, publishes to the Visual Studio Marketplace, and creates a GitHub release with generated notes and the `.vsix` attached. `CHANGELOG.md` is generated from GitHub release notes at build time and ships only inside the `.vsix`; it's never committed. The version in `package.json` is not kept in sync: each release is packaged with the version from its tag.
+
+Pull requests are built by [ci.yml](.github/workflows/ci.yml), which runs the tests and uploads a `.vsix` (versioned `x.y.z-pr.<PR>.<run>`) as a workflow artifact. Download it from the run's summary page and install it with `code --install-extension`.
+
+Required repository secrets:
+
+- `VSCE_PAT`: Azure DevOps personal access token with the Marketplace **Manage** scope
+- `OVSX_PAT` (optional): [open-vsx.org](https://open-vsx.org) token; if set, the extension is also published to Open VSX (the namespace must be claimed once first)
