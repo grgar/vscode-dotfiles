@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # version is computed from git describe
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: xvfb-run -a npm test
+      # Needs no secrets, so it also works for pull requests from forks.
+      - name: Package
+        run: make package suffix=-pr.${{ github.event.number }}.${{ github.run_number }}
+      - id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: "*.vsix"
+          if-no-files-found: error
+      - name: Link to the .vsix
+        run: echo "Download the [.vsix](${{ steps.upload.outputs.artifact-url }}) and install it with \`code --install-extension\`." >>"$GITHUB_STEP_SUMMARY"
