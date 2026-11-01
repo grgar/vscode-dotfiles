@@ -6,7 +6,7 @@ src/**
 .gitignore
 Makefile
 **/tsconfig.json
-**/.eslintrc.json
+eslint.config.mjs
 **/*.map
 **/*.ts
 *.vsix
