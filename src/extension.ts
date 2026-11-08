@@ -22,6 +22,7 @@ async function apply() {
 			}
 		}
 		try {
+			await fs.mkdir(path.dirname(filePath), { recursive: true });
 			await fs.writeFile(filePath, content);
 			outputChannel.appendLine(`${new Date().toLocaleString()}: wrote ${filePath}`);
 		} catch (err) {
