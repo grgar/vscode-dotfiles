@@ -20,6 +20,12 @@ A code lens is added to keys in settings.json under `dotfiles.files` to open the
 
 <img src="images/code-lens.png" width="360">
 
+## Browsing files as a filesystem
+
+Run **dotfiles: Browse Files** from the command palette (or the code lens on the `dotfiles.files` key in settings.json) to add a `dotfiles:` workspace folder showing the files defined in settings as a virtual filesystem. Keys containing `/` appear as directories. Editing and saving a file in this folder writes the change back to `dotfiles.files` directly, without needing `dotfiles.autoUpdate`, and changes to the setting (for example arriving via Settings Sync) refresh open editors.
+
+Since only files are stored in settings, a directory created in the virtual folder persists only until a file is created inside it or the window is reloaded.
+
 ## Extension Settings
 
 ||Description|Default|
