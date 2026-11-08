@@ -1,4 +1,5 @@
-import { posix as path } from "path";
+import * as os from "os";
+import * as path from "path";
 import * as vscode from "vscode";
 
 export const namespace = "dotfiles";
@@ -19,11 +20,8 @@ export default class Configuration {
 	}
 
 	getDirectoryPath() {
-		let directory = vscode.workspace.getConfiguration(this.namespace).get<string>(Section.directory) || process.env["XDG_CONFIG_HOME"] || path.join(process.env["HOME"]!, ".config");
-		if (directory.endsWith("/")) {
-			return directory.slice(directory.length - 1);
-		}
-		return directory;
+		const directory = vscode.workspace.getConfiguration(this.namespace).get<string>(Section.directory) || process.env["XDG_CONFIG_HOME"] || path.join(os.homedir(), ".config");
+		return path.resolve(directory);
 	}
 
 	getFiles() {

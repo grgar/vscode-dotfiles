@@ -1,5 +1,5 @@
 import * as fs from "fs/promises";
-import { posix as path } from "path";
+import * as path from "path";
 import * as vscode from "vscode";
 import Configuration, { namespace as configNamespace, Section } from "./Configuration";
 import { SettingsLensProvider } from "./SettingsLensProvider";
