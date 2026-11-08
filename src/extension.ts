@@ -43,11 +43,11 @@ function didSave(doc: vscode.TextDocument) {
 	}
 	const directory = configuration.getDirectoryPath();
 	const relativePath = path.relative(directory, doc.uri.fsPath);
-	if (relativePath === ".." || relativePath.startsWith(".." + path.sep) || path.isAbsolute(relativePath)) {
+	if (relativePath === "" || relativePath === ".." || relativePath.startsWith(".." + path.sep) || path.isAbsolute(relativePath)) {
 		return;
 	}
 	const files = configuration.getFiles();
-	if (!files[relativePath]) {
+	if (!appliesToPlatform(relativePath) || !Object.hasOwn(files, relativePath)) {
 		outputChannel.appendLine(`${new Date().toLocaleString()}: file ${relativePath} in ${directory} not found in settings`);
 		return;
 	}
