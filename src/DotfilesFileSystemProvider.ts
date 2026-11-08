@@ -53,7 +53,15 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 	// store, so directories created before any file exists in them live only
 	// for the current session.
 	private readonly sessionDirs = new Set<string>();
+	// The provider's view of dotfiles.files. Reading the setting hands back the
+	// whole object (contents included) on every call and the explorer stats
+	// every entry, so reads are served from here instead. It is kept in sync by
+	// setSnapshot, called for this provider's own writes and, through
+	// handleConfigurationChange, for every external change. Never mutate it:
+	// replace it via setSnapshot.
 	private snapshot: Files;
+	// UTF-8 sizes by key, so stat doesn't re-encode unchanged content.
+	private readonly sizes = new Map<string, { content: string, size: number; }>();
 	// Mutations read the whole setting, change it and write it back, so they
 	// must not interleave or a later write would drop an earlier one's change.
 	private queue: Promise<unknown> = Promise.resolve();
@@ -69,13 +77,13 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 
 	stat(uri: vscode.Uri): vscode.FileStat {
 		const key = keyOf(uri);
-		const files = this.configuration.getFiles();
+		const files = this.snapshot;
 		if (has(files, key)) {
 			return {
 				type: vscode.FileType.File,
 				ctime: this.ctime,
 				mtime: this.mtimes.get(key) ?? this.ctime,
-				size: new TextEncoder().encode(files[key]).byteLength,
+				size: this.sizeOf(key, files[key]),
 			};
 		}
 		if (this.isDirectory(key, files)) {
@@ -86,7 +94,7 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 
 	readDirectory(uri: vscode.Uri): [string, vscode.FileType][] {
 		const key = keyOf(uri);
-		const files = this.configuration.getFiles();
+		const files = this.snapshot;
 		if (has(files, key)) {
 			throw vscode.FileSystemError.FileNotADirectory(uri);
 		}
@@ -102,7 +110,7 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 
 	readFile(uri: vscode.Uri): Uint8Array {
 		const key = keyOf(uri);
-		const files = this.configuration.getFiles();
+		const files = this.snapshot;
 		if (has(files, key)) {
 			return new TextEncoder().encode(files[key]);
 		}
@@ -115,7 +123,7 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 	writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean; }): Promise<void> {
 		return this.serialize(async () => {
 			const key = keyOf(uri);
-			const files = { ...this.configuration.getFiles() };
+			const files = { ...this.snapshot };
 			const exists = has(files, key);
 			if (key === "" || (!exists && this.isDirectory(key, files))) {
 				throw vscode.FileSystemError.FileIsADirectory(uri);
@@ -138,7 +146,7 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 
 	createDirectory(uri: vscode.Uri): void {
 		const key = keyOf(uri);
-		const files = this.configuration.getFiles();
+		const files = this.snapshot;
 		if (has(files, key) || this.isDirectory(key, files)) {
 			throw vscode.FileSystemError.FileExists(uri);
 		}
@@ -152,7 +160,7 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 			if (key === "") {
 				throw vscode.FileSystemError.NoPermissions(uri);
 			}
-			const files = { ...this.configuration.getFiles() };
+			const files = { ...this.snapshot };
 			const prefix = key + "/";
 			const removed = Object.keys(files).filter(k => k === key || k.startsWith(prefix));
 			const removedDirs = [...this.sessionDirs].filter(dir => dir === key || dir.startsWith(prefix));
@@ -191,7 +199,7 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 			if (newKey === "__proto__") {
 				throw vscode.FileSystemError.NoPermissions(newUri);
 			}
-			const files = { ...this.configuration.getFiles() };
+			const files = { ...this.snapshot };
 			const prefix = oldKey + "/";
 			const moves = new Map<string, string>();
 			if (has(files, oldKey)) {
@@ -256,7 +264,7 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 				this.mtimes.delete(key);
 			}
 		}
-		this.snapshot = { ...current };
+		this.setSnapshot(current);
 		if (events.length > 0) {
 			this.emitter.fire(events);
 		}
@@ -277,13 +285,32 @@ export class DotfilesFileSystemProvider implements vscode.FileSystemProvider {
 	// the configuration contains and fail the operation.
 	private async setFilesTracked(files: Files) {
 		const previous = this.snapshot;
-		this.snapshot = { ...files };
+		this.setSnapshot(files);
 		await this.configuration.setFiles(files);
 		if (!sameFiles(this.configuration.getFiles(), files)) {
-			this.snapshot = previous;
+			this.setSnapshot(previous);
 			this.handleConfigurationChange();
 			throw vscode.FileSystemError.Unavailable("Unable to update dotfiles.files");
 		}
+	}
+
+	private setSnapshot(files: Files) {
+		this.snapshot = { ...files };
+		for (const key of this.sizes.keys()) {
+			if (!has(files, key)) {
+				this.sizes.delete(key);
+			}
+		}
+	}
+
+	private sizeOf(key: string, content: string): number {
+		const cached = this.sizes.get(key);
+		if (cached?.content === content) {
+			return cached.size;
+		}
+		const size = new TextEncoder().encode(content).byteLength;
+		this.sizes.set(key, { content, size });
+		return size;
 	}
 
 	private isDirectory(key: string, files: Files): boolean {
