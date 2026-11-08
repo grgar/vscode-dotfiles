@@ -2,6 +2,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import * as vscode from "vscode";
 import Configuration, { namespace as configNamespace, Section } from "./Configuration";
+import { appliesToPlatform, filterFiles } from "./platform";
 import { SettingsLensProvider } from "./SettingsLensProvider";
 
 const outputChannel = vscode.window.createOutputChannel(configNamespace);
@@ -9,7 +10,7 @@ const outputChannel = vscode.window.createOutputChannel(configNamespace);
 async function apply() {
 	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
 	const directory = configuration.getDirectoryPath();
-	for (const [file, content] of Object.entries(configuration.getFiles())) {
+	for (const [file, content] of Object.entries(filterFiles(configuration.getFiles()))) {
 		const filePath = path.join(directory, file);
 		try {
 			await fs.stat(filePath);

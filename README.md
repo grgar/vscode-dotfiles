@@ -14,7 +14,19 @@ If `dotfiles.autoUpdate` is enabled, automatically apply config from settings to
 }
 ```
 
-writes file `$XDG_CONFIG_HOME/path/to/file.txt` with the content of the key. File paths are always POSIX.
+writes file `$XDG_CONFIG_HOME/path/to/file.txt` with the content of the key.
+
+### Platforms
+
+The path separator in a key selects which platform the file is written on. Forward slashes and backslashes are not converted to each other:
+
+- keys with forward slashes (`path/to/file.txt`) apply on Linux and macOS only
+- keys with backslashes (`path\to\file.txt`) apply on Windows only
+- keys without a separator (`file.txt`) apply on every platform
+
+To configure the same file on several platforms, add a key for each. Keys for other platforms are left untouched in settings and are ignored when applying config, opening files or saving changes back.
+
+On Windows, if `dotfiles.directory` is unset the base directory is `%XDG_CONFIG_HOME%` or `%USERPROFILE%\.config`.
 
 A code lens is added to keys in settings.json under `dotfiles.files` to open the file in an editor. Saving the file in the editor will apply changes back to settings.json if `dotfiles.autoUpdate` is enabled.
 

@@ -1,6 +1,7 @@
 import { JSONVisitor, visit } from "jsonc-parser";
 import * as path from "path";
 import * as vscode from "vscode";
+import { appliesToPlatform } from "./platform";
 
 export class SettingsLensProvider implements vscode.CodeLensProvider {
 	private key: string;
@@ -12,7 +13,7 @@ export class SettingsLensProvider implements vscode.CodeLensProvider {
 	}
 
 	provideCodeLenses(document: vscode.TextDocument): vscode.ProviderResult<vscode.CodeLens[]> {
-		return parseJSONForFileLocations(this.key, document).map(
+		return parseJSONForFileLocations(this.key, document).filter(({ name }) => appliesToPlatform(name)).map(
 			({ name, range }) =>
 				new vscode.CodeLens(
 					range,

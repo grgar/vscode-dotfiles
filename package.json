@@ -57,7 +57,7 @@
         },
         "dotfiles.files": {
           "type": "object",
-          "markdownDescription": "Files to apply where key is file path relative to `#dotfiles.directory#` and value is file content.",
+          "markdownDescription": "Files to apply where key is file path relative to `#dotfiles.directory#` and value is file content. Keys with forward slashes apply on Linux/macOS and keys with backslashes apply on Windows.",
           "order": 2,
           "patternProperties": {
             ".*": {
