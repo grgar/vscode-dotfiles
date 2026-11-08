@@ -6,9 +6,10 @@ import { appliesToPlatform, filterFiles } from "./platform";
 import { SettingsLensProvider } from "./SettingsLensProvider";
 
 const outputChannel = vscode.window.createOutputChannel(configNamespace);
+const log = (msg: string) => outputChannel.appendLine(msg);
 
 async function apply() {
-	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
+	const configuration = new Configuration(configNamespace, log);
 	const directory = configuration.getDirectoryPath();
 	for (const [file, content] of Object.entries(filterFiles(configuration.getFiles()))) {
 		const filePath = path.join(directory, file);
@@ -33,7 +34,7 @@ async function apply() {
 }
 
 function didSave(doc: vscode.TextDocument) {
-	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
+	const configuration = new Configuration(configNamespace, log);
 	if (!configuration.shouldAutoUpdate()) {
 		return;
 	}
@@ -41,11 +42,11 @@ function didSave(doc: vscode.TextDocument) {
 		return;
 	}
 	const directory = configuration.getDirectoryPath();
-	if (!doc.uri.path.startsWith(directory + "/")) {
+	const relativePath = path.relative(directory, doc.uri.fsPath);
+	if (relativePath === ".." || relativePath.startsWith(".." + path.sep) || path.isAbsolute(relativePath)) {
 		return;
 	}
 	const files = configuration.getFiles();
-	const relativePath = doc.uri.path.slice(directory.length + 1);
 	if (!files[relativePath]) {
 		outputChannel.appendLine(`${new Date().toLocaleString()}: file ${relativePath} in ${directory} not found in settings`);
 		return;
@@ -56,7 +57,7 @@ function didSave(doc: vscode.TextDocument) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	const configuration = new Configuration(configNamespace, outputChannel.appendLine);
+	const configuration = new Configuration(configNamespace, log);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dotfiles.apply", apply),
 		vscode.workspace.onDidSaveTextDocument(didSave),
