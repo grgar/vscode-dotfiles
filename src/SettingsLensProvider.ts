@@ -20,7 +20,7 @@ export class SettingsLensProvider implements vscode.CodeLensProvider {
 					{
 						title: "$(go-to-file) open file",
 						command: "vscode.open",
-						arguments: [path.join(this.basePath, name)],
+						arguments: [vscode.Uri.file(path.join(this.basePath, name))],
 					},
 				),
 		);
