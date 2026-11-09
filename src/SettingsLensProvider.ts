@@ -5,14 +5,15 @@ import { appliesToPlatform } from "./platform";
 
 export class SettingsLensProvider implements vscode.CodeLensProvider {
 	private key: string;
-	private basePath: string;
+	private getBasePath: () => string;
 
-	constructor(key: string, basePath: string) {
+	constructor(key: string, getBasePath: () => string) {
 		this.key = key;
-		this.basePath = basePath;
+		this.getBasePath = getBasePath;
 	}
 
 	provideCodeLenses(document: vscode.TextDocument): vscode.ProviderResult<vscode.CodeLens[]> {
+		const basePath = this.getBasePath();
 		return parseJSONForFileLocations(this.key, document).filter(({ name }) => appliesToPlatform(name)).map(
 			({ name, range }) =>
 				new vscode.CodeLens(
@@ -20,7 +21,7 @@ export class SettingsLensProvider implements vscode.CodeLensProvider {
 					{
 						title: "$(go-to-file) open file",
 						command: "vscode.open",
-						arguments: [vscode.Uri.file(path.join(this.basePath, name))],
+						arguments: [vscode.Uri.file(path.join(basePath, name))],
 					},
 				),
 		);

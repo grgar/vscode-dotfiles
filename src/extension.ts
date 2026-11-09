@@ -66,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
 				language: 'jsonc',
 				pattern: '**/settings.json',
 			},
-			new SettingsLensProvider(`${configNamespace}.${Section.files}`, configuration.getDirectoryPath()),
+			new SettingsLensProvider(`${configNamespace}.${Section.files}`, () => configuration.getDirectoryPath()),
 		)
 	);
 	if (configuration.shouldAutoUpdate()) {
