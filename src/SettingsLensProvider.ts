@@ -1,25 +1,27 @@
 import { JSONVisitor, visit } from "jsonc-parser";
-import { posix as path } from "path";
+import * as path from "path";
 import * as vscode from "vscode";
+import { appliesToPlatform } from "./platform";
 
 export class SettingsLensProvider implements vscode.CodeLensProvider {
 	private key: string;
-	private basePath: string;
+	private getBasePath: () => string;
 
-	constructor(key: string, basePath: string) {
+	constructor(key: string, getBasePath: () => string) {
 		this.key = key;
-		this.basePath = basePath;
+		this.getBasePath = getBasePath;
 	}
 
 	provideCodeLenses(document: vscode.TextDocument): vscode.ProviderResult<vscode.CodeLens[]> {
-		return parseJSONForFileLocations(this.key, document).map(
+		const basePath = this.getBasePath();
+		return parseJSONForFileLocations(this.key, document).filter(({ name }) => appliesToPlatform(name)).map(
 			({ name, range }) =>
 				new vscode.CodeLens(
 					range,
 					{
 						title: "$(go-to-file) open file",
 						command: "vscode.open",
-						arguments: [path.join(this.basePath, name)],
+						arguments: [vscode.Uri.file(path.join(basePath, name))],
 					},
 				),
 		);
