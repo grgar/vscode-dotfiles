@@ -35,7 +35,8 @@
     "color": "#f6f8fa"
   },
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onFileSystem:dotfiles"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -45,6 +46,12 @@
         "title": "Apply Config",
         "category": "dotfiles",
         "icon": "$(file-symlink-file)"
+      },
+      {
+        "command": "dotfiles.browse",
+        "title": "Browse Files",
+        "category": "dotfiles",
+        "icon": "$(file-directory)"
       }
     ],
     "configuration": {

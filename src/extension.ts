@@ -2,6 +2,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import * as vscode from "vscode";
 import Configuration, { namespace as configNamespace, Section } from "./Configuration";
+import { DotfilesFileSystemProvider, scheme } from "./DotfilesFileSystemProvider";
 import { appliesToPlatform, filterFiles } from "./platform";
 import { SettingsLensProvider } from "./SettingsLensProvider";
 
@@ -56,10 +57,26 @@ function didSave(doc: vscode.TextDocument) {
 	outputChannel.appendLine(`${new Date().toLocaleString()}: updated ${relativePath}`);
 }
 
+function browse() {
+	const uri = vscode.Uri.from({ scheme, path: "/" });
+	if (vscode.workspace.workspaceFolders?.some(folder => folder.uri.scheme === scheme)) {
+		return;
+	}
+	vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length ?? 0, 0, { uri, name: configNamespace });
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	const configuration = new Configuration(configNamespace, log);
+	const fileSystemProvider = new DotfilesFileSystemProvider(configuration);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dotfiles.apply", apply),
+		vscode.commands.registerCommand("dotfiles.browse", browse),
+		vscode.workspace.registerFileSystemProvider(scheme, fileSystemProvider, { isCaseSensitive: true }),
+		vscode.workspace.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration(`${configNamespace}.${Section.files}`)) {
+				fileSystemProvider.handleConfigurationChange();
+			}
+		}),
 		vscode.workspace.onDidSaveTextDocument(didSave),
 		vscode.languages.registerCodeLensProvider(
 			{
